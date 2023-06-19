@@ -1,0 +1,39 @@
+body {
+  background-color: #f8f8f8;
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border: 1px solid #e1e1e1;
+  border-radius: 5px;
+}
+
+h1 {
+  text-align: center;
+  color: #333333;
+}
+
+#exchangeRateContainer {
+  margin-top: 20px;
+  text-align: center;
+}
+
+label {
+  font-size: 14px;
+  margin-right: 5px;
+}
+
+select {
+  padding: 5px;
+  font-size: 14px;
+}
+
+p#exchangeRate {
+  font-size: 18px;
+  margin-top: 10px;
+  color: #333333;
+}
