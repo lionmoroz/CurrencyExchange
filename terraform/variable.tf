@@ -32,3 +32,11 @@ variable "user_name" {
 variable "user_policy_name" {
     default = "example_user_policy"
 }
+
+variable "access_key" {
+    description = "AWS USer accesss key"
+}
+
+variable "secret_key" {
+    description = "AWS User secret key"
+}
