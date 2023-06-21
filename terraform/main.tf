@@ -1,21 +1,21 @@
 resource "aws_instance" "my_instance" {
-  ami           = "ami-08766f81ab52792ce"
-  instance_type = "t3.micro"
+  ami           = var.instance_ami
+  instance_type = var.instance_type
 
-  key_name      = "nginx-ssh"
-  user_data     = file("startup_script.sh")
+  key_name  = var.instance_key_name
+  user_data = file("startup_script.sh")
 
 
   vpc_security_group_ids = [aws_security_group.my_security_group.id]
 
   tags = {
-    Name = "exchange-currency"
+    Name = var.instance_tag
   }
 }
 
 
 resource "aws_security_group" "my_security_group" {
-  name        = "exchange-security-group"
+  name        = var.secure_group_name
   description = "Security group for EC2 instance"
 
   ingress {
@@ -47,6 +47,60 @@ resource "aws_security_group" "my_security_group" {
   }
 
   tags = {
-    Name = "exchange-security-group"
+    Name = var.secure_group_name
   }
 }
+
+resource "aws_iam_user" "example_user" {
+  name = var.user_name
+}
+
+resource "aws_iam_user_policy" "example_user_policy" {
+  name   = var.user_policy_name
+  user   = aws_iam_user.example_user.name
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "ec2:DescribeInstances",
+      "Resource": "*"
+    },
+    {
+        "Effect": "Allow",
+        "Action": [
+            "ec2:StartInstances",
+            "ec2:StopInstances",
+            "ec2:RebootInstances",
+            "ec2-instance-connect:SendSSHPublicKey"
+           ],
+            "Resource": ["arn:aws:ec2:eu-north-1:${data.aws_caller_identity.current.account_id}:instance/${aws_instance.my_instance.id}"]
+    },
+    {
+         "Effect": "Allow",
+         "Action": [
+           "ec2:DescribeSecurityGroupRules",
+           "ec2:DescribeTags",
+           "ec2:DescribeSecurityGroups"
+         ],
+         "Resource": "*"
+       },
+       {
+         "Effect": "Allow",
+         "Action": [
+           "ec2:RevokeSecurityGroupIngress",
+           "ec2:AuthorizeSecurityGroupIngress",
+           "ec2:ModifySecurityGroupRules"
+        ],
+        "Resource": [
+          "arn:aws:ec2:eu-north-1:${data.aws_caller_identity.current.account_id}:security-group/${aws_security_group.my_security_group.id}",
+          "arn:aws:ec2:*:${data.aws_caller_identity.current.account_id}:security-group-rule/*"
+        ]
+    }
+  ]
+}
+EOF
+}
+
+data "aws_caller_identity" "current" {}
