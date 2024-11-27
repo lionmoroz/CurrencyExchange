@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Exchange Rate</title>
+  <link rel="stylesheet" type="text/css" href="./styles.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Exchange Rate</h1>
+    <div id="exchangeRateContainer">
+      <label for="baseCurrency">Base Currency:</label>
+      <select id="baseCurrency">
+        <option value="USD">USD - United States Dollar USD</option>
+        <option value="EUR">EUR - Euro EUR </option>
+        <option value="GBP">GBP - British Pound Sterling GBP</option>
+        <option value="JPY">JPY - Japanese Yen JPY</option>
+        <!-- Add more currency options as needed -->
+      </select>
+      <p id="exchangeRate"></p>
+      <p id="updateMessage" style="display: none;">Exchange rate updated!!!</p>
+    </div>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      var baseCurrency = 'USD';
+      var targetCurrency = 'UAH';
+
+      function getExchangeRate() {
+        baseCurrency = $('#baseCurrency').val();
+        var apiUrl = 'https://api.exchangerate-api.com/v4/latest/' + baseCurrency;
+
+        $.get(apiUrl, function(data) {
+          var exchangeRate = data.rates[targetCurrency];
+          $('#exchangeRate').text(`1 ${baseCurrency} = ${exchangeRate} ${targetCurrency}`);
+          $('#updateMessage').fadeIn().delay(2000).fadeOut();
+        });
+      }
+
+      // Initial call to get exchange rate
+      getExchangeRate();
+
+      // Set interval to update exchange rate every 1 minute (60000 milliseconds)
+      setInterval(getExchangeRate, 60000);
+
+      // Event listener for currency selection change
+      $('#baseCurrency').on('change', function() {
+        getExchangeRate();
+      });
+    });
+  </script>
+</body>
+</html>
+
